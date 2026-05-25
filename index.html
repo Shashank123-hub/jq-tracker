@@ -91,6 +91,8 @@
       font-size: 13px;
       color: #9a3412;
       line-height: 1.5;
+      text-align: center;
+      font-weight: 500;
     }
 
     .prompt {
@@ -236,13 +238,6 @@
       box-shadow: 0 12px 25px rgba(235, 99, 63, 0.22);
     }
 
-    .auto-save {
-      margin-top: 14px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
     @media (max-width: 390px) {
       h1 {
         font-size: 30px;
@@ -263,81 +258,128 @@
   <main class="app">
 
     <section class="hero">
-      <div class="eyebrow">JQ® Practice</div>
 
-      <h1>Insight-to-Action Tracker</h1>
+      <div class="eyebrow">
+        JQ® Practice
+      </div>
+
+      <h1>
+        Insight-to-Action Tracker
+      </h1>
 
       <p class="subtitle">
-        A simple way to notice the progress in shaping better choices.
+        Notice your progress toward better choices.
       </p>
+
     </section>
 
     <section class="card">
 
       <div class="notice">
-        Your reflections stay on your device. No personal tracking or cloud storage is used.
+        Private. Stored only on your device.
       </div>
 
       <div class="prompt">
-        How many times today did you catch yourself...
+        How many times today did you catch yourself?
       </div>
 
       <!-- PAUSE -->
       <div class="counter-row">
+
         <div>
-          <div class="counter-title">Pausing</div>
-          <div class="counter-help">
-            Before responding or reacting.
+
+          <div class="counter-title">
+            Pausing
           </div>
+
+          <div class="counter-help">
+            Before reacting or responding.
+          </div>
+
         </div>
 
         <div class="controls">
-          <button class="circle-btn" data-action="minus" data-key="pause">−</button>
 
-          <div class="count" id="pause-count">0</div>
+          <button class="circle-btn" data-action="minus" data-key="pause">
+            −
+          </button>
 
-          <button class="circle-btn plus" data-action="plus" data-key="pause">+</button>
+          <div class="count" id="pause-count">
+            0
+          </div>
+
+          <button class="circle-btn plus" data-action="plus" data-key="pause">
+            +
+          </button>
+
         </div>
+
       </div>
 
       <!-- HABIT -->
       <div class="counter-row">
+
         <div>
+
           <div class="counter-title">
             Catching an old habit / belief
           </div>
 
           <div class="counter-help">
-            Noticing a behavior that is not serving you.
+            Noticing a pattern that doesn’t serve you.
           </div>
+
         </div>
 
         <div class="controls">
-          <button class="circle-btn" data-action="minus" data-key="habit">−</button>
 
-          <div class="count" id="habit-count">0</div>
+          <button class="circle-btn" data-action="minus" data-key="habit">
+            −
+          </button>
 
-          <button class="circle-btn plus" data-action="plus" data-key="habit">+</button>
+          <div class="count" id="habit-count">
+            0
+          </div>
+
+          <button class="circle-btn plus" data-action="plus" data-key="habit">
+            +
+          </button>
+
         </div>
+
       </div>
 
       <!-- TRAP -->
       <div class="counter-row">
+
         <div>
-          <div class="counter-title">Avoiding a trap</div>
+
+          <div class="counter-title">
+            Avoiding a trap
+          </div>
 
           <div class="counter-help">
             Choosing not to fall into a familiar pattern.
           </div>
+
         </div>
 
         <div class="controls">
-          <button class="circle-btn" data-action="minus" data-key="trap">−</button>
 
-          <div class="count" id="trap-count">0</div>
+          <button class="circle-btn" data-action="minus" data-key="trap">
+            −
+          </button>
 
-          <button class="circle-btn plus" data-action="plus" data-key="trap">+</button>
+          <div class="count" id="trap-count">
+            0
+          </div>
+
+          <button class="circle-btn plus" data-action="plus" data-key="trap">
+            +
+          </button>
+
         </div>
+
       </div>
 
     </section>
