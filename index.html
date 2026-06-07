@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JQ® Practice Tracker</title>
-
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" href="./favicon.png">
 
   <style>
     :root {
@@ -118,9 +117,10 @@
     }
 
     .counter-title {
-      font-weight: 700;
+      font-weight: 800;
       font-size: 15px;
       margin-bottom: 4px;
+      color: #000;
     }
 
     .counter-help {
@@ -168,55 +168,152 @@
       font-weight: 800;
     }
 
-    .section-title {
-      margin: 22px 0 10px;
-      font-size: 15px;
-      color: var(--muted);
+    .dashboard-btn {
+      width: 100%;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 18px;
+      padding: 15px 16px;
+      background: var(--green);
+      color: #fff;
+      font-size: 16px;
       font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      cursor: pointer;
+      box-shadow: 0 12px 25px rgba(45, 161, 147, 0.22);
     }
 
-    .history {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      overflow: hidden;
-    }
-
-    .history-row {
-      display: grid;
-      grid-template-columns: 90px 1fr;
-      gap: 10px;
-      padding: 13px 14px;
-      border-top: 1px solid var(--border);
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(31, 41, 51, 0.45);
+      display: none;
       align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 50;
     }
 
-    .history-row:first-child {
-      border-top: none;
+    .modal-overlay.active {
+      display: flex;
     }
 
-    .history-date {
-      font-size: 13px;
+    .modal {
+      width: 100%;
+      max-width: 430px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-size: 20px;
       font-weight: 800;
     }
 
-    .history-data {
+    .close-btn {
+      border: 0;
+      background: #f3f4f6;
+      border-radius: 999px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .note-question {
+      font-weight: 800;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .modal-actions {
       display: flex;
-      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .secondary-btn,
+    .primary-btn {
+      flex: 1;
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .secondary-btn {
+      background: #f3f4f6;
+      color: var(--text);
+    }
+
+    .primary-btn {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .dashboard-day {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .dashboard-date {
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-counts {
+      display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 13px;
+      margin-bottom: 10px;
     }
 
     .pill {
-      background: #fff;
+      background: #f9fafb;
       border: 1px solid var(--border);
       border-radius: 999px;
       padding: 5px 8px;
+      font-size: 13px;
       white-space: nowrap;
+    }
+
+    .note-item {
+      padding: 9px 0;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .note-label {
+      font-weight: 800;
+      color: var(--green);
     }
 
     .empty {
@@ -226,9 +323,9 @@
       text-align: center;
     }
 
-    .talk-btn {
+    .help-btn {
       width: 100%;
-      margin-top: 18px;
+      margin-top: 14px;
       border: 0;
       border-radius: 18px;
       padding: 15px 16px;
@@ -260,19 +357,13 @@
   <main class="app">
 
     <section class="hero">
+      <div class="eyebrow">JQ® Practice</div>
 
-      <div class="eyebrow">
-        JQ® Practice
-      </div>
-
-      <h1>
-        Insight-to-Action Tracker
-      </h1>
+      <h1>Insight-to-Action Tracker</h1>
 
       <p class="subtitle">
         Notice your progress toward better choices.
       </p>
-
     </section>
 
     <section class="card">
@@ -285,118 +376,85 @@
         How many times today did you catch yourself?
       </div>
 
-      <!-- PAUSE -->
       <div class="counter-row">
-
         <div>
-
-          <div class="counter-title">
-            Pausing
-          </div>
-
-          <div class="counter-help">
-            Before reacting or responding.
-          </div>
-
+          <div class="counter-title">Pausing</div>
+          <div class="counter-help">Before reacting or responding.</div>
         </div>
 
         <div class="controls">
-
-          <button class="circle-btn" data-action="minus" data-key="pause">
-            −
-          </button>
-
-          <div class="count" id="pause-count">
-            0
-          </div>
-
-          <button class="circle-btn plus" data-action="plus" data-key="pause">
-            +
-          </button>
-
+          <button class="circle-btn" data-action="minus" data-key="pause">−</button>
+          <div class="count" id="pause-count">0</div>
+          <button class="circle-btn plus" data-action="plus" data-key="pause">+</button>
         </div>
-
       </div>
 
-      <!-- HABIT -->
       <div class="counter-row">
-
         <div>
-
-          <div class="counter-title">
-            Catching an old habit / belief
-          </div>
-
-          <div class="counter-help">
-            Noticing a pattern that doesn’t serve you.
-          </div>
-
+          <div class="counter-title">Catching an old habit / belief</div>
+          <div class="counter-help">Noticing a response that doesn’t serve you.</div>
         </div>
 
         <div class="controls">
-
-          <button class="circle-btn" data-action="minus" data-key="habit">
-            −
-          </button>
-
-          <div class="count" id="habit-count">
-            0
-          </div>
-
-          <button class="circle-btn plus" data-action="plus" data-key="habit">
-            +
-          </button>
-
+          <button class="circle-btn" data-action="minus" data-key="habit">−</button>
+          <div class="count" id="habit-count">0</div>
+          <button class="circle-btn plus" data-action="plus" data-key="habit">+</button>
         </div>
-
       </div>
 
-      <!-- TRAP -->
       <div class="counter-row">
-
         <div>
-
-          <div class="counter-title">
-            Avoiding a trap
-          </div>
-
-          <div class="counter-help">
-            Choosing not to fall into a familiar pattern.
-          </div>
-
+          <div class="counter-title">Avoiding a trap</div>
+          <div class="counter-help">Choosing a better response in the moment.</div>
         </div>
 
         <div class="controls">
-
-          <button class="circle-btn" data-action="minus" data-key="trap">
-            −
-          </button>
-
-          <div class="count" id="trap-count">
-            0
-          </div>
-
-          <button class="circle-btn plus" data-action="plus" data-key="trap">
-            +
-          </button>
-
+          <button class="circle-btn" data-action="minus" data-key="trap">−</button>
+          <div class="count" id="trap-count">0</div>
+          <button class="circle-btn plus" data-action="plus" data-key="trap">+</button>
         </div>
-
       </div>
 
     </section>
 
-    <div class="section-title">
-      Last 7 Days
-    </div>
-
-    <section class="history" id="history"></section>
-
-    <button class="talk-btn" id="talk-krishna">
-      Talk to Krishna
+    <button class="dashboard-btn" id="open-dashboard">
+      Last 7-Day Dashboard
     </button>
 
   </main>
+
+  <div class="modal-overlay" id="note-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Context</div>
+        <button class="close-btn" id="close-note">×</button>
+      </div>
+
+      <div class="note-question" id="note-question"></div>
+
+      <textarea id="note-text" placeholder="Optional note..."></textarea>
+
+      <div class="modal-actions">
+        <button class="secondary-btn" id="skip-note">Skip</button>
+        <button class="primary-btn" id="save-note">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="dashboard-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Last 7-Day Dashboard</div>
+        <button class="close-btn" id="close-dashboard">×</button>
+      </div>
+
+      <div id="dashboard-content"></div>
+
+      <button class="help-btn" id="need-help">
+        Need Help?
+      </button>
+    </div>
+  </div>
 
   <script>
     const STORAGE_KEY = "jq_tracker_v2";
@@ -405,6 +463,20 @@
       pause: 0,
       habit: 0,
       trap: 0
+    };
+
+    let pendingNoteKey = null;
+
+    const noteQuestions = {
+      pause: "When did you pause?",
+      habit: "Which old habit or belief did you notice?",
+      trap: "Which trap did you avoid?"
+    };
+
+    const labels = {
+      pause: "Pause",
+      habit: "Habit",
+      trap: "Trap"
     };
 
     function todayKey() {
@@ -435,6 +507,26 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
     }
 
+    function ensureToday(store) {
+      const key = todayKey();
+
+      if (!store[key]) {
+        store[key] = {
+          pause: 0,
+          habit: 0,
+          trap: 0,
+          notes: [],
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      if (!Array.isArray(store[key].notes)) {
+        store[key].notes = [];
+      }
+
+      return store[key];
+    }
+
     function renderCounts() {
       document.getElementById("pause-count").textContent = state.pause;
       document.getElementById("habit-count").textContent = state.habit;
@@ -443,17 +535,14 @@
 
     function saveToday() {
       const store = getStore();
+      const today = ensureToday(store);
 
-      store[todayKey()] = {
-        pause: state.pause,
-        habit: state.habit,
-        trap: state.trap,
-        updatedAt: new Date().toISOString()
-      };
+      today.pause = state.pause;
+      today.habit = state.habit;
+      today.trap = state.trap;
+      today.updatedAt = new Date().toISOString();
 
       setStore(store);
-
-      renderHistory();
     }
 
     function loadToday() {
@@ -467,21 +556,55 @@
       }
 
       renderCounts();
-      renderHistory();
     }
 
-    function renderHistory() {
-      const store = getStore();
+    function openNoteModal(key) {
+      pendingNoteKey = key;
 
-      const history = document.getElementById("history");
+      document.getElementById("note-question").textContent = noteQuestions[key];
+      document.getElementById("note-text").value = "";
+      document.getElementById("note-modal").classList.add("active");
+      document.getElementById("note-text").focus();
+    }
+
+    function closeNoteModal() {
+      pendingNoteKey = null;
+      document.getElementById("note-modal").classList.remove("active");
+    }
+
+    function saveNote() {
+      const text = document.getElementById("note-text").value.trim();
+
+      if (text && pendingNoteKey) {
+        const store = getStore();
+        const today = ensureToday(store);
+
+        today.notes.push({
+          type: pendingNoteKey,
+          text,
+          createdAt: new Date().toISOString()
+        });
+
+        today.updatedAt = new Date().toISOString();
+
+        setStore(store);
+      }
+
+      closeNoteModal();
+    }
+
+    function renderDashboard() {
+      const store = getStore();
 
       const dates = Object.keys(store)
         .sort()
         .reverse()
         .slice(0, 7);
 
+      const dashboard = document.getElementById("dashboard-content");
+
       if (!dates.length) {
-        history.innerHTML = `
+        dashboard.innerHTML = `
           <div class="empty">
             No entries yet.
           </div>
@@ -489,51 +612,82 @@
         return;
       }
 
-      history.innerHTML = dates.map(dateKey => {
+      dashboard.innerHTML = dates.map(dateKey => {
         const entry = store[dateKey];
+        const notes = Array.isArray(entry.notes) ? entry.notes : [];
+
+        const notesHtml = notes.length
+          ? notes.map(note => `
+              <div class="note-item">
+                <div class="note-label">${labels[note.type] || "Note"}</div>
+                <div>${escapeHtml(note.text)}</div>
+              </div>
+            `).join("")
+          : `
+              <div class="note-item">
+                No notes added.
+              </div>
+            `;
 
         return `
-          <div class="history-row">
+          <div class="dashboard-day">
+            <div class="dashboard-date">${formatDate(dateKey)}</div>
 
-            <div class="history-date">
-              ${formatDate(dateKey)}
-            </div>
-
-            <div class="history-data">
+            <div class="dashboard-counts">
               <span class="pill">Pause ${entry.pause || 0}</span>
               <span class="pill">Habit ${entry.habit || 0}</span>
               <span class="pill">Trap ${entry.trap || 0}</span>
             </div>
 
+            ${notesHtml}
           </div>
         `;
       }).join("");
     }
 
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
     document.querySelectorAll(".circle-btn").forEach(button => {
-
       button.addEventListener("click", () => {
-
         const key = button.dataset.key;
         const action = button.dataset.action;
 
         if (action === "plus") {
           state[key] += 1;
+          renderCounts();
+          saveToday();
+          openNoteModal(key);
         }
 
         if (action === "minus") {
           state[key] = Math.max(0, state[key] - 1);
+          renderCounts();
+          saveToday();
         }
-
-        renderCounts();
-
-        saveToday();
       });
-
     });
 
-    document.getElementById("talk-krishna").addEventListener("click", () => {
+    document.getElementById("close-note").addEventListener("click", closeNoteModal);
+    document.getElementById("skip-note").addEventListener("click", closeNoteModal);
+    document.getElementById("save-note").addEventListener("click", saveNote);
 
+    document.getElementById("open-dashboard").addEventListener("click", () => {
+      renderDashboard();
+      document.getElementById("dashboard-modal").classList.add("active");
+    });
+
+    document.getElementById("close-dashboard").addEventListener("click", () => {
+      document.getElementById("dashboard-modal").classList.remove("active");
+    });
+
+    document.getElementById("need-help").addEventListener("click", () => {
       window.open("https://cal.com/krishnapendyala", "_blank");
     });
 
