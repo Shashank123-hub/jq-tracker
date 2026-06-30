@@ -56,7 +56,6 @@
       background: var(--soft-green);
       padding: 2px 8px;
       border-radius: 999px;
-      /* margin-bottom: px; */
     }
 
     h1 {
@@ -69,10 +68,9 @@
     .subtitle {
       margin: 12px auto 0;
       max-width: 360px;
-      color: var(--muted);
+      color: #000;
       font-size: 18px;
       line-height: 1;
-      color: #000;
     }
 
     .card {
@@ -88,8 +86,6 @@
       margin-bottom: 14px;
       padding: 8px 8px;
       background: #fff7ed;
-      /* border: 1px solid #fed7aa;
-      border-radius: 16px; */
       font-size: 15px;
       color: #9a3412;
       text-align: center;
@@ -249,6 +245,17 @@
       outline: none;
     }
 
+    .reflection-field {
+      margin-bottom: 12px;
+    }
+
+    .reflection-label {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
     .modal-actions {
       display: flex;
       gap: 10px;
@@ -309,6 +316,7 @@
       border-top: 1px solid var(--border);
       font-size: 14px;
       line-height: 1.45;
+      white-space: pre-line;
     }
 
     .note-label {
@@ -359,22 +367,16 @@
     <section class="hero">
       <div class="eyebrow">JQ® Practice</div>
 
-      <!-- <h2>Insight-to-Action Tracker</h2> -->
-
       <p class="subtitle">
         Track your progress toward better choices.
       </p>
     </section>
 
     <div class="notice">
-        Data is private & stored only on your device.
-      </div>
+      Data is private & stored only on your device.
+    </div>
 
     <section class="card">
-
-      <!-- <div class="notice">
-        Data is private & stored only on your device.
-      </div> -->
 
       <div class="prompt">
         How many times today did you catch yourself?
@@ -419,6 +421,19 @@
         </div>
       </div>
 
+      <div class="counter-row">
+        <div>
+          <div class="counter-title">Reflecting</div>
+          <div class="counter-help">Reflecting about an event or interaction.</div>
+        </div>
+
+        <div class="controls">
+          <button class="circle-btn" data-action="minus" data-key="reflect">−</button>
+          <div class="count" id="reflect-count">0</div>
+          <button class="circle-btn plus" data-action="plus" data-key="reflect">+</button>
+        </div>
+      </div>
+
     </section>
 
     <button class="dashboard-btn" id="open-dashboard">
@@ -436,7 +451,21 @@
 
       <div class="note-question" id="note-question"></div>
 
-      <textarea id="note-text" placeholder="Optional note..."></textarea>
+      <div id="standard-note-wrap">
+        <textarea id="note-text" placeholder="Optional note..."></textarea>
+      </div>
+
+      <div id="reflect-note-wrap" style="display:none;">
+        <div class="reflection-field">
+          <div class="reflection-label">What was it about?</div>
+          <textarea id="reflect-about" placeholder="Briefly describe the event or interaction..."></textarea>
+        </div>
+
+        <div class="reflection-field">
+          <div class="reflection-label">What did you distill?</div>
+          <textarea id="reflect-distill" placeholder="What did you learn or take away?"></textarea>
+        </div>
+      </div>
 
       <div class="modal-actions">
         <button class="secondary-btn" id="skip-note">Skip</button>
@@ -466,7 +495,8 @@
     const state = {
       pause: 0,
       habit: 0,
-      trap: 0
+      trap: 0,
+      reflect: 0
     };
 
     let pendingNoteKey = null;
@@ -474,13 +504,15 @@
     const noteQuestions = {
       pause: "When did you pause?",
       habit: "Which old habit or belief did you notice?",
-      trap: "Which trap did you avoid?"
+      trap: "Which trap did you avoid?",
+      reflect: "Reflecting about an event or interaction."
     };
 
     const labels = {
       pause: "Pause",
       habit: "Habit",
-      trap: "Trap"
+      trap: "Trap",
+      reflect: "Reflecting"
     };
 
     function todayKey() {
@@ -519,9 +551,14 @@
           pause: 0,
           habit: 0,
           trap: 0,
+          reflect: 0,
           notes: [],
           updatedAt: new Date().toISOString()
         };
+      }
+
+      if (typeof store[key].reflect !== "number") {
+        store[key].reflect = 0;
       }
 
       if (!Array.isArray(store[key].notes)) {
@@ -535,6 +572,7 @@
       document.getElementById("pause-count").textContent = state.pause;
       document.getElementById("habit-count").textContent = state.habit;
       document.getElementById("trap-count").textContent = state.trap;
+      document.getElementById("reflect-count").textContent = state.reflect;
     }
 
     function saveToday() {
@@ -544,6 +582,7 @@
       today.pause = state.pause;
       today.habit = state.habit;
       today.trap = state.trap;
+      today.reflect = state.reflect;
       today.updatedAt = new Date().toISOString();
 
       setStore(store);
@@ -557,6 +596,7 @@
         state.pause = saved.pause || 0;
         state.habit = saved.habit || 0;
         state.trap = saved.trap || 0;
+        state.reflect = saved.reflect || 0;
       }
 
       renderCounts();
@@ -567,8 +607,22 @@
 
       document.getElementById("note-question").textContent = noteQuestions[key];
       document.getElementById("note-text").value = "";
+
+      document.getElementById("standard-note-wrap").style.display = key === "reflect" ? "none" : "block";
+      document.getElementById("reflect-note-wrap").style.display = key === "reflect" ? "block" : "none";
+
+      document.getElementById("reflect-about").value = "";
+      document.getElementById("reflect-distill").value = "";
+
+      document.getElementById("skip-note").style.display = key === "reflect" ? "none" : "block";
+
       document.getElementById("note-modal").classList.add("active");
-      document.getElementById("note-text").focus();
+
+      if (key === "reflect") {
+        document.getElementById("reflect-about").focus();
+      } else {
+        document.getElementById("note-text").focus();
+      }
     }
 
     function closeNoteModal() {
@@ -577,23 +631,38 @@
     }
 
     function saveNote() {
-      const text = document.getElementById("note-text").value.trim();
+      const store = getStore();
+      const today = ensureToday(store);
 
-      if (text && pendingNoteKey) {
-        const store = getStore();
-        const today = ensureToday(store);
+      if (pendingNoteKey === "reflect") {
+        const about = document.getElementById("reflect-about").value.trim();
+        const distill = document.getElementById("reflect-distill").value.trim();
+
+        if (!about || !distill) {
+          alert("Please answer both reflection questions.");
+          return;
+        }
 
         today.notes.push({
-          type: pendingNoteKey,
-          text,
+          type: "reflect",
+          text: `What was it about? ${about}\n\nWhat did you distill? ${distill}`,
           createdAt: new Date().toISOString()
         });
+      } else {
+        const text = document.getElementById("note-text").value.trim();
 
-        today.updatedAt = new Date().toISOString();
-
-        setStore(store);
+        if (text && pendingNoteKey) {
+          today.notes.push({
+            type: pendingNoteKey,
+            text,
+            createdAt: new Date().toISOString()
+          });
+        }
       }
 
+      today.updatedAt = new Date().toISOString();
+
+      setStore(store);
       closeNoteModal();
     }
 
@@ -641,6 +710,7 @@
               <span class="pill">Pause ${entry.pause || 0}</span>
               <span class="pill">Habit ${entry.habit || 0}</span>
               <span class="pill">Trap ${entry.trap || 0}</span>
+              <span class="pill">Reflecting ${entry.reflect || 0}</span>
             </div>
 
             ${notesHtml}
